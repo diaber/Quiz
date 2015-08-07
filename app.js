@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
 var methodOverride = require('method-override');
+var session = require('express-session');
 var routes = require('./routes/index');
 // var users = require('./routes/users');
 
@@ -22,12 +23,45 @@ app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser('Quiz'));
+app.use(session());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Helpers dinamicos:
+app.use(function(req, res, next) {
+  // guardar path en session.redir para despues de login
+  if (!req.path.match(/\/login|\/logout|\/user/)) {
+    req.session.redir = req.path;
+  }
+
+  // Hacer visible req.session en las vistas
+  res.locals.session = req.session;
+  next();
+});
+
+app.use(function(req, res, next) {
+  if(req.session.user) {
+    var currentTimeStamp = new Date();
+    var userTimeStamp = new Date(req.session.user.timeStamp);
+    var iddle = currentTimeStamp.getTime() - userTimeStamp.getTime();
+    var maxIddleTime = 120000; // 2 mins en milisegundos.
+
+    if (iddle > maxIddleTime) {
+      delete req.session.user;
+      res.redirect(req.session.redir.toString());
+    } else {
+      req.session.user.timeStamp = new Date();
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
 app.use('/', routes);
 // app.use('/users', users);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -47,8 +81,8 @@ if (app.get('env') === 'development') {
             message: err.message,
             error: err,
             errors: []
-        });
     });
+  });
 }
 
 // production error handler

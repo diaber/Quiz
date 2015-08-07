@@ -8,11 +8,16 @@
     <link media="only screen and (max-width: 480px)" rel='stylesheet' href='/stylesheets/smartphone.css' />
     <link rel='icon' href='favicon.ico' type='image/x-icon'/>
   </head>
+
   <body>
   <div id="page-wrap">
-    <header>
-
-
+    <header class="main" id="h1">
+      <%if(!session.user){%>
+        <span class="right"><a href="/login">Login</a></span>
+      <%}else{%>
+        <span class="right"> <%=session.user.username%> <a href="/logout">Logout</a></span>
+      <%}%>
+      
      <h2>Quiz<span>: El juego de las preguntas</span></h2>
         </header>
 
@@ -20,11 +25,11 @@
     <nav class="main" id="n1" role="navigation">
       <span><a href="/">Inicio</a></span>
       <span><a href="/quizes">Preguntas</a></span>
-      <span><a href="/author">Creditos</a></span>
+      <span><a href="/author">Créditos</a></span>
     </nav>
         <section class="main" id="s1">
             <% if(errors.length) { %>
-                <span id="ErrorMsgs">Corregir errores:<br/>
+                <span id='ErrorMsgs'>Corregir errores:<br/>
                 <% for(var i in errors) { %>
                     <span><%= errors[i].message %></span><br/>
                 <% } %>
