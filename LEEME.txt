@@ -1,0 +1,12 @@
+Nota:
+
+Los commits del 14 al 18 no aparecen, en lugar de usar:
+git commit -m "commit nuevo"
+
+he usado:
+git commit --amend -m "..."
+
+con lo que me ha ido actualizando el comentario del commit y
+aparece solo el último commit (Quiz 19: HTTPS - HTTP Seguro)
+
+
